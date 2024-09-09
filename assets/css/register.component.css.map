@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,SAAS,CAAC;EACN,UAAU,EAAE,IAAI;CAMnB;;AAPD,AAEI,SAFK,CAEL,QAAQ,CAAC;EACL,MAAM,EAAE,IAAI;EACZ,SAAS,EAAE,KAAK;EAChB,KAAK,EAAE,IAAI;CACd",
+    "sources": [
+        "../../src/app/features/auth/components/register/register.component.scss"
+    ],
+    "names": [],
+    "file": "register.component.css"
+}

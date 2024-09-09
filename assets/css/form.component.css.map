@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "../../src/app/features/sessions/components/form/form.component.scss"
+    ],
+    "names": [],
+    "file": "form.component.css"
+}
