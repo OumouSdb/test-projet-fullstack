@@ -59,8 +59,11 @@ export class FormComponent implements OnInit {
         .subscribe((_: Session) => this.exitPage('Session updated !'));
     }
   }
+  public get snackBar(): MatSnackBar {
+    return this.matSnackBar;
+  }
 
-  private initForm(session?: Session): void {
+  public initForm(session?: Session): void {
     this.sessionForm = this.fb.group({
       name: [
         session ? session.name : '',
