@@ -43,4 +43,10 @@ public class Teacher {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Teacher(long l, String john_doe) {
+    }
+
+    public Teacher(long l, String doe, String john) {
+    }
 }
