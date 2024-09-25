@@ -30,7 +30,7 @@ public class TeacherServiceTest {
     @BeforeEach
     public void setup() {
         // Initialisation de l'objet teacher1
-        teacher1 = new Teacher(1L, "Bob", "L eponge",
+        teacher1 = new Teacher(1L, "L eponge", "Bob",
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0),
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0));
     }
