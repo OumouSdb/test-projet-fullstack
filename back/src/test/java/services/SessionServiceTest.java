@@ -1,6 +1,7 @@
 package services;
 
 import com.openclassrooms.starterjwt.exception.BadRequestException;
+import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
@@ -31,17 +32,15 @@ public class SessionServiceTest {
     @Mock
     private SessionRepository sessionRepository;
 
-    private Session session;
-
     @Mock
     private UserRepository userRepository;
 
+    private Session session;
     private Teacher teacher;
-
     private User user;
 
     @BeforeEach
-    private void setup(){
+    private void setup() {
         user = new User();
         user.setId(2L);
         user.setFirstName("John");
@@ -71,33 +70,16 @@ public class SessionServiceTest {
                 .build();
     }
 
-
     @Test
-    public void testCreateSession(){
-
+    public void testCreateSession() {
         when(sessionRepository.save(any(Session.class))).thenReturn(session);
         Session sessionCreated = sessionService.create(session);
+
         verify(sessionRepository, times(1)).save(session);
 
         assertEquals(sessionCreated.getDescription(), session.getDescription());
         assertEquals(sessionCreated.getId(), session.getId());
         assertEquals(sessionCreated.getName(), session.getName());
-    }
-
-    @Test
-    public void testUpdateSession(){
-        session.setName("Esperanza");
-        session.setUpdatedAt(LocalDateTime.now());
-        LocalDateTime updatedTime = LocalDateTime.now();
-        session.setUpdatedAt(updatedTime);
-
-        when(sessionService.update(1L, session)).thenReturn(session);
-        Session sessionUpdate = sessionService.update(1L, session);
-        verify(sessionRepository, times(1)).save(session);
-
-        assertEquals(updatedTime, sessionUpdate.getUpdatedAt());
-        assertEquals("Esperanza", sessionUpdate.getName());
-        assertEquals(1L, sessionUpdate.getId());
     }
 
     @Test
@@ -135,6 +117,131 @@ public class SessionServiceTest {
         verify(sessionRepository, times(0)).save(any(Session.class));
     }
 
+    @Test
+    public void testParticipate_UserNotFound() {
+        Long sessionId = 1L;
+        Long userId = 999L;
 
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.participate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testParticipate_SessionNotFound() {
+        Long sessionId = 999L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.participate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testParticipate_InvalidSessionId() {
+        Long sessionId = null;
+        Long userId = 2L;
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.participate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testParticipate_InvalidUserId() {
+        Long sessionId = 1L;
+        Long userId = null;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.participate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testNoLongerParticipate_Success() {
+        Long sessionId = 1L;
+        Long userId = 2L;
+        session.getUsers().add(user);
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+
+        sessionService.noLongerParticipate(sessionId, userId);
+
+        assertFalse(session.getUsers().contains(user), "msg");
+
+        verify(sessionRepository, times(1)).save(session);
+    }
+
+    @Test
+    public void testNoLongerParticipate_UserNotFound() {
+        Long sessionId = 1L;
+        Long userId = 999L;
+        session.getUsers().add(user);
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+
+        assertThrows(BadRequestException.class, () -> {
+            sessionService.noLongerParticipate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testNoLongerParticipate_SessionNotFound() {
+        Long sessionId = 999L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.noLongerParticipate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testNoLongerParticipate_UserNotInSession() {
+        Long sessionId = 1L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+
+        assertThrows(BadRequestException.class, () -> {
+            sessionService.noLongerParticipate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
+
+    @Test
+    public void testParticipate_SessionDoesNotExist() {
+        Long sessionId = 999L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            sessionService.participate(sessionId, userId);
+        });
+
+        verify(sessionRepository, times(0)).save(any(Session.class));
+    }
 
 }

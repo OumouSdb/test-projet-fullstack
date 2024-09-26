@@ -1,5 +1,6 @@
 package services;
 
+import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.UserService;
@@ -13,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,4 +61,14 @@ public class UserServiceTest {
         User result = userService.findById(1L);
         assertNull(result); // Utilisation de assertNull pour vérifier que l'utilisateur est nul
     }
+
+    @Test
+    public void testFindById_UserNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        User result = userService.findById(999L);
+
+        assertNull(result);
+    }
+
 }
