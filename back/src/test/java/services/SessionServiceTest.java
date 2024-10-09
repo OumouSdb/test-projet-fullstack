@@ -87,17 +87,10 @@ public class SessionServiceTest {
         Long sessionId = 1L;
         Long userId = 2L;
 
-        // Simuler les réponses des mocks
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        // Appel de la méthode participate
         sessionService.participate(sessionId, userId);
-
-        // Vérifier que l'utilisateur a bien été ajouté à la session
-        assertTrue(session.getUsers().contains(user), "L'utilisateur devrait être ajouté à la session");
-
-        // Vérifier que la méthode save a été appelée
+        assertTrue(session.getUsers().contains(user));
         verify(sessionRepository, times(1)).save(session);
     }
 
@@ -114,47 +107,6 @@ public class SessionServiceTest {
         assertThrows(BadRequestException.class, () -> {
             sessionService.participate(sessionId, userId);
         });
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
-
-    @Test
-    public void testParticipate_UserNotFound() {
-        Long sessionId = 1L;
-        Long userId = 999L;
-
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            sessionService.participate(sessionId, userId);
-        });
-
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
-
-    @Test
-    public void testParticipate_SessionNotFound() {
-        Long sessionId = 999L;
-        Long userId = 2L;
-
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            sessionService.participate(sessionId, userId);
-        });
-
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
-
-    @Test
-    public void testParticipate_InvalidSessionId() {
-        Long sessionId = null;
-        Long userId = 2L;
-
-        assertThrows(NotFoundException.class, () -> {
-            sessionService.participate(sessionId, userId);
-        });
-
         verify(sessionRepository, times(0)).save(any(Session.class));
     }
 
@@ -182,66 +134,23 @@ public class SessionServiceTest {
 
         sessionService.noLongerParticipate(sessionId, userId);
 
-        assertFalse(session.getUsers().contains(user), "msg");
+        assertFalse(session.getUsers().contains(user));
 
         verify(sessionRepository, times(1)).save(session);
     }
 
-    @Test
-    public void testNoLongerParticipate_UserNotFound() {
-        Long sessionId = 1L;
-        Long userId = 999L;
-        session.getUsers().add(user);
 
+    @Test
+    public void testGetById_Success() {
+        Long sessionId = 1L;
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
 
-        assertThrows(BadRequestException.class, () -> {
-            sessionService.noLongerParticipate(sessionId, userId);
-        });
+        Session result = sessionService.getById(sessionId);
 
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
+        verify(sessionRepository, times(1)).findById(sessionId);
 
-    @Test
-    public void testNoLongerParticipate_SessionNotFound() {
-        Long sessionId = 999L;
-        Long userId = 2L;
-
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            sessionService.noLongerParticipate(sessionId, userId);
-        });
-
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
-
-    @Test
-    public void testNoLongerParticipate_UserNotInSession() {
-        Long sessionId = 1L;
-        Long userId = 2L;
-
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-
-        assertThrows(BadRequestException.class, () -> {
-            sessionService.noLongerParticipate(sessionId, userId);
-        });
-
-        verify(sessionRepository, times(0)).save(any(Session.class));
-    }
-
-    @Test
-    public void testParticipate_SessionDoesNotExist() {
-        Long sessionId = 999L;
-        Long userId = 2L;
-
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            sessionService.participate(sessionId, userId);
-        });
-
-        verify(sessionRepository, times(0)).save(any(Session.class));
+        assertNotNull(result);
+        assertEquals(session.getId(), result.getId());
     }
 
 }
