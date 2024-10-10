@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +31,6 @@ public class TeacherServiceTest {
 
     @BeforeEach
     public void setup() {
-        // Initialisation de l'objet teacher1
         teacher1 = new Teacher(1L, "L eponge", "Bob",
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0),
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0));
@@ -37,15 +38,89 @@ public class TeacherServiceTest {
 
     @Test
     public void testFindById() {
-        // Simule le comportement du repository pour retourner un Optional contenant teacher1
         when(teacherRepository.findById(1L)).thenReturn(Optional.of(teacher1));
 
-        // Appel de la méthode findById() du service
         Teacher result = teacherService.findById(1L);
 
-        // Vérification des valeurs
         assertEquals(1L, result.getId());
         assertEquals("Bob", result.getFirstName());
         assertEquals(LocalDateTime.of(2023, 9, 24, 14, 30, 0), result.getCreatedAt());
     }
+
+    @Test
+    public void testFindAll() {
+
+        List<Teacher> teachers = Arrays.asList(
+                new Teacher(1L, "L eponge", "Bob",
+                        LocalDateTime.of(2023, 9, 24, 14, 30, 0),
+                        LocalDateTime.of(2023, 9, 24, 14, 30, 0)),
+                new Teacher(2L, "Carré", "Patrick",
+                        LocalDateTime.of(2023, 9, 25, 14, 30, 0),
+                        LocalDateTime.of(2023, 9, 25, 14, 30, 0))
+        );
+
+
+        when(teacherRepository.findAll()).thenReturn(teachers);
+
+        List<Teacher> result = teacherService.findAll();
+
+        assertEquals(2, result.size());
+        assertEquals("Bob", result.get(0).getFirstName());
+        assertEquals("Patrick", result.get(1).getFirstName());
+        verify(teacherRepository, times(1)).findAll();
+    }
+    @Test
+    public void testDeleteById() {
+
+        when(teacherRepository.findById(1L)).thenReturn(Optional.of(teacher1));
+
+        teacherRepository.deleteById(1L);
+
+        verify(teacherRepository, times(1)).deleteById(1L);
+
+        when(teacherRepository.findById(1L)).thenReturn(Optional.empty());
+        Optional<Teacher> result = teacherRepository.findById(1L);
+        verify(teacherRepository, times(1)).deleteById(1L);
+    }
+    @Test
+    public void testUpdateTeacher() {
+
+        Teacher updatedTeacher = new Teacher(1L, "L eponge", "Bob",
+                LocalDateTime.of(2023, 9, 24, 14, 30, 0),
+                LocalDateTime.of(2023, 10, 1, 14, 30, 0));
+
+
+        when(teacherRepository.save(any(Teacher.class))).thenReturn(updatedTeacher);
+
+
+        Teacher result = teacherRepository.save(updatedTeacher);
+
+
+        assertEquals("Bob", result.getFirstName());
+        assertEquals(LocalDateTime.of(2023, 10, 1, 14, 30, 0), result.getUpdatedAt());
+
+
+        verify(teacherRepository, times(1)).save(updatedTeacher);
+    }
+
+    @Test
+    public void testSaveTeacher() {
+
+        Teacher newTeacher = new Teacher(null, "Carré", "Patrick",
+                LocalDateTime.now(), LocalDateTime.now());
+
+
+        when(teacherRepository.save(newTeacher)).thenReturn(new Teacher(2L, "Carré", "Patrick",
+                LocalDateTime.of(2023, 10, 1, 14, 30, 0), LocalDateTime.of(2023, 10, 1, 14, 30, 0)));
+
+
+        Teacher result = teacherRepository.save(newTeacher);
+
+        assertNotNull(result.getId());
+        assertEquals(2L, result.getId());
+        assertEquals("Patrick", result.getFirstName());
+        verify(teacherRepository, times(1)).save(newTeacher);
+    }
+
+
 }
