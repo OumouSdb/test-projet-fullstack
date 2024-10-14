@@ -64,17 +64,17 @@ describe('AppComponent', () => {
 
   it('should call sessionService.$isLogged and return the observable', (done) => {
     component.$isLogged().subscribe((result) => {
-      expect(result).toBe(true); // Vérifie que le résultat est bien celui attendu
-      done(); // Termine le test
+      expect(result).toBe(true);
+      done();
     });
 
-    expect(sessionServiceMock.$isLogged).toHaveBeenCalled(); // Vérifie que la méthode $isLogged est appelée
+    expect(sessionServiceMock.$isLogged).toHaveBeenCalled();
   });
 
   it('should log out and navigate to the root', () => {
     component.logout();
 
-    expect(sessionServiceMock.logOut).toHaveBeenCalled(); // Vérifie que logOut est appelé
-    expect(routerMock.navigate).toHaveBeenCalledWith(['']); // Vérifie que navigate est appelé avec le bon paramètre
+    expect(sessionServiceMock.logOut).toHaveBeenCalled();
+    expect(routerMock.navigate).toHaveBeenCalledWith(['']);
   });
 });

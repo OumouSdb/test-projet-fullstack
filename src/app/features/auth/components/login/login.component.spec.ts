@@ -66,16 +66,14 @@ describe('LoginComponent', () => {
   });
 
   it('should login successfully and navigate to /sessions', () => {
-    // Arrange
+
     const sessionInfo = { userId: '123' } as any;
     authServiceMock.login.mockReturnValue(of(sessionInfo));
 
     component.form.setValue({ email: 'test@example.com', password: 'password123' });
 
-    // Act
     component.submit();
 
-    // Assert
     expect(authServiceMock.login).toHaveBeenCalledWith(component.form.value);
     expect(sessionServiceMock.logIn).toHaveBeenCalledWith(sessionInfo);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/sessions']);
@@ -84,15 +82,13 @@ describe('LoginComponent', () => {
 
 
   it('should set onError to true on login failure', () => {
-    // Arrange
+
     authServiceMock.login.mockReturnValue(throwError(() => new Error('Login failed')));
 
     component.form.setValue({ email: 'test@example.com', password: 'password123' });
 
-    // Act
     component.submit();
 
-    // Assert
     expect(component.onError).toBe(true);
   });
 });

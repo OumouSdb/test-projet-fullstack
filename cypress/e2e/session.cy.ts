@@ -1,310 +1,209 @@
-// describe('Session spec', () => {
-//     it('should login and see session list page', () => {
-//         cy.visit('/login');
-//         cy.intercept('POST', '/api/auth/login', {
-//             body: {
-//                 id: 1,
-//                 username: 'userName',
-//                 firstName: 'firstName',
-//                 lastName: 'lastName',
-//                 admin: true,
-//             },
-//         });
+describe('End to End test with the Simpsons Yoga Adventure', () => {
 
-//         cy.intercept('GET', '/api/session', {
-//             body: [
-//                 {
-//                     id: 1,
-//                     name: 'Session 1',
-//                     description: 'descript',
-//                     date: new Date(),
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     teacher_id: 1,
-//                     users: [1, 2, 3],
-//                 }
-//             ],
-//         });
-//         cy.login()
-//     });
+    beforeEach(() => {
+        cy.intercept('GET', '/api/teacher', {
+            body: [
+                { id: 1, firstName: 'Homer', lastName: 'Simpson' },
+                { id: 2, firstName: 'Marge', lastName: 'Simpson' }
+            ]
+        }).as('getTeachers');
 
-//     it('should see the details', () => {
-//         cy.intercept('GET', '/api/session/1', {
-//             body: {
-//                 id: 1,
-//                 name: 'Session 1',
-//                 description: 'Lorem ipsum dolor sit amet. ' +
-//                     'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                     'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                     'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                 date: new Date(),
-//                 createdAt: new Date(),
-//                 updatedAt: new Date(),
-//                 teacher_id: 1,
-//                 users: [1, 2, 3]
-//             },
-//         }).as('session');
+        cy.intercept('GET', '/api/teacher/1', {
+            id: 1, firstName: 'Homer', lastName: 'Simpson'
+        }).as('getTeacher');
 
-//         cy.intercept('GET', '/api/teacher/1', {
-//             body: {
-//                 id: 1,
-//                 lastName: 'Mario',
-//                 firstName: 'Mario',
-//                 createdAt: new Date(),
-//                 updatedAt: new Date(),
-//             },
-//         }).as('teacher');
+        cy.intercept('GET', '/api/session', {
+            body: [
+                {
+                    "id": 1,
+                    "name": "Simpson Family Yoga",
+                    "date": "2024-10-14T00:00:00.000+00:00",
+                    "teacher_id": 1,
+                    "description": "A family attempt at yoga led by Homer.",
+                    "users": [],
+                    "createdAt": "2024-10-01T11:30:09",
+                    "updatedAt": "2024-10-10T16:42:27"
+                }
+            ]
+        }).as('getSessions');
 
-//         cy.intercept('GET', '/api/session', {
-//             body: [
-//                 {
-//                     id: 1,
-//                     name: 'Session 1',
-//                     description: 'Lorem ipsum dolor sit amet. ' +
-//                         'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                         'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                         'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                     date: new Date(),
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     teacher_id: 1,
-//                     users: [1, 2, 3],
-//                 },
-//                 {
-//                     id: 2,
-//                     name: 'Session 2',
-//                     description: 'Lorem ipsum dolor sit amet. ' +
-//                         'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                         'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                         'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                     date: new Date(),
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     teacher_id: 1,
-//                     users: [1, 2, 4],
-//                 },
-//             ]
-//         }).as('sessions');
+        cy.login()
+    });
 
-//         cy.get('mat-card-actions button').first().click();
-//         cy.url().should('include', '/sessions/detail/1');
-//         cy.get('h1').contains('Session 1');
-//         cy.get('div.description').contains('Lorem ipsum dolor sit amet. ' +
-//             'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//             'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//             'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?');
-//         cy.get('mat-card-subtitle').contains('Mario MARIO')
-//     });
+    it('should create a session where the Simpsons do yoga', () => {
+        cy.contains('button', 'Create').click();
+        cy.get('form').should('be.visible');
 
-//     it('should return to sessions list page', () => {
-//         cy.get('button').first().click();
-//         cy.url().should('include', '/sessions');
-//     });
+        cy.url().should('include', '/sessions/create');
 
-//     // Account page
-//     it('should go to the account page', () => {
-//         cy.intercept('GET', '/api/user/1', {
-//             id: 1,
-//             email: 'mario@test.com',
-//             lastName: 'Mario',
-//             firstName: 'Mario',
-//             admin: false,
-//             password: 'test!1234',
-//             createdAt: new Date(),
-//         });
+        cy.intercept('POST', '/api/session', {
+            body: {
+                id: 3,
+                name: "Simpson Yoga Session 2",
+                date: "2024-11-01T00:00:00.000+00:00",
+                teacher_id: 2,
+                description: "A new attempt at yoga led by Marge.",
+                users: [],
+                createdAt: "2024-11-01T11:30:09",
+                updatedAt: "2024-11-01T16:42:27"
+            }
+        }).as('createSession');
 
-//         cy.get('.link').contains('Account').click();
-//         cy.url().should('include', '/me');
+        cy.get('input[formControlName=name]').type("Simpson Yoga Session 2");
+        cy.get('input[formControlName=date]').type(`2024-11-01`);
+        cy.get('mat-select[formControlName=teacher_id]').click();
+        cy.get('mat-option').contains('Marge Simpson').click();
+        cy.get('textarea[formControlName=description]').type("A new attempt at yoga led by Marge.");
 
-//         cy.get('p').should('exist');
-//         cy.get('p').should('exist');
-//     });
+        cy.intercept('GET', '/api/session', {
+            body:
+            {
+                id: 1,
+                name: "Simpson Family Yoga",
+                date: "2024-10-14T00:00:00.000+00:00",
+                teacher_id: 1,
+                description: "A family attempt at yoga led by Homer.",
+                users: [],
+                createdAt: "2024-10-01T11:30:09",
+                updatedAt: "2024-10-10T16:42:27"
+            }
 
-//     // Logout
-//     it('should logout', () => {
-//         cy.get('.link').contains('Logout').click();
-//         cy.url().should('contain', '/');
-//     });
+        }).as('getUpdatedSessions');
 
-//     // Not Found
-//     it('should redirect to the not found page', () => {
-//         cy.visit('/notavalidurlforsure');
-//         cy.url().should('contain', '/404');
-//     });
-// });
+        cy.contains('button', 'Save').click();
 
-// describe('admin yoga-app', () => {
+        cy.url().should('include', '/sessions');
+        cy.get('.mat-snack-bar-container').should('contain', 'Session created !');
+    });
 
-//     it('should login', () => {
-//         cy.visit('/login');
-//         cy.server();
-//         cy.intercept('POST', '/api/auth/login', {
-//             body: {
-//                 id: 1,
-//                 username: 'userName',
-//                 firstName: 'firstName',
-//                 lastName: 'lastName',
-//                 admin: true
-//             },
-//         })
+    it('should let the admin (Bart) delete a session', () => {
+        cy.intercept('DELETE', '/api/session/1', {
+            statusCode: 200
+        }).as('deleteSession');
+        cy.intercept('GET', '/api/session', {
+            body: [
+                {
+                    "id": 2,
+                    "name": "Yoga Session Retry",
+                    "date": "2024-10-14T00:00:00.000+00:00",
+                    "teacher_id": 2,
+                    "description": "Retry led by Marge.",
+                    "users": [],
+                    "createdAt": "2024-10-01T11:30:09",
+                    "updatedAt": "2024-10-10T16:42:27"
+                }
+            ]
+        }).as('getSessionsAfterDelete');
+        cy.intercept('GET', '/api/session/1', {
+            body: {
+                id: 1,
+                name: "Simpson Family Yoga",
+                date: "2024-10-14T00:00:00.000+00:00",
+                teacher_id: 1,
+                description: "A family attempt at yoga led by Homer.",
+                users: [],
+                createdAt: "2024-10-01T11:30:09",
+                updatedAt: "2024-10-10T16:42:27"
+            }
+        }).as('sessionDetail');
+        cy.get('button').contains('Detail').click();
+        cy.get('button').contains('Delete').click();
+        cy.get('.mat-snack-bar-container').should('contain', 'Session deleted !');
+        cy.url().should('include', '/session');
+    });
 
-//         cy.intercept('GET', '/api/session', []).as('session')
-//         cy.get('input[formControlName=email]').type("yoga@studio.com")
-//         cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`)
-//         cy.url().should('include', '/sessions');
-//     });
 
-//     it('create session', () => {
-//         cy.intercept('GET', '/api/teacher', {
-//             body: [
-//                 {
-//                     id: 1,
-//                     lastName: 'Mario',
-//                     firstName: 'Mario',
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                 },
-//                 {
-//                     id: 2,
-//                     lastName: 'Luigi',
-//                     firstName: 'Mario',
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                 }
-//             ]
-//         });
-//         cy.get('button').contains('Create').click();
-//         cy.url().should('include', '/sessions/create');
+    it('should let the admin (Bart) update a session', () => {
+        const sessionUpdated = {
+            id: 1,
+            name: "Simpsons Yoga Success",
+            date: "2024-12-25T00:00:00.000+00:00",
+            teacher_id: 1,
+            description: "Finally, the Simpsons succeed at yoga!",
+            users: [],
+            createdAt: "2024-10-01T11:30:09",
+            updatedAt: "2024-12-24T16:42:27"
+        };
 
-//         cy.intercept('POST', '/api/session', {
-//             body: {
-//                 id: 3,
-//                 name: 'New session',
-//                 description: 'New session description',
-//                 teacher: 1,
-//                 users: [],
-//             },
-//         }).as('session');
+        cy.intercept('PUT', '/api/session/1', {
+            statusCode: 200,
+            body: sessionUpdated
+        }).as('updateSession');
 
-//         cy.intercept('GET', '/api/session', {
-//             body: [
-//                 {
-//                     id: 1,
-//                     name: 'Session 1',
-//                     description: 'Lorem ipsum dolor sit amet. ' +
-//                         'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                         'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                         'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                     date: new Date(),
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     teacher_id: 1,
-//                     users: [1, 2, 3],
-//                 },
-//                 {
-//                     id: 2,
-//                     name: 'Session 2',
-//                     description: 'Lorem ipsum dolor sit amet. ' +
-//                         'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                         'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                         'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                     date: new Date(),
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     teacher_id: 1,
-//                     users: [1, 2, 4],
-//                 },
-//                 {
-//                     id: 3,
-//                     name: 'New session',
-//                     description: 'New session description',
-//                     teacher: 1,
-//                     users: [],
-//                 },
-//             ],
-//         }).as('sessions');
+        cy.intercept('GET', '/api/session', {
+            body: [
+                sessionUpdated,
+                {
+                    "id": 2,
+                    "name": "Yoga Session Retry",
+                    "date": "2024-10-14T00:00:00.000+00:00",
+                    "teacher_id": 2,
+                    "description": "Retry led by Marge.",
+                    "users": [],
+                    "createdAt": "2024-10-01T11:30:09",
+                    "updatedAt": "2024-10-10T16:42:27"
+                }
+            ]
+        }).as('getUpdatedSessions');
 
-//         cy.get('input[formControlName=name]').type('New session');
-//         // set the date by clicking on the calendar
-//         cy.get('input[formControlName=date]').type('2024-01-10');
-//         // set the time by clicking on the clock
-//         cy.get('textarea[formControlName=description]').type(
-//             'New session description'
-//         );
-//         cy.get('mat-select[formControlName=teacher_id]').click();
-//         cy.get('mat-option').contains('Mario Mario').click();
+        cy.intercept('GET', '/api/session/1', {
+            body: {
+                id: 1,
+                name: "Simpson Family Yoga",
+                date: "2024-10-14T00:00:00.000+00:00",
+                teacher_id: 1,
+                description: "A family attempt at yoga led by Homer.",
+                users: [],
+                createdAt: "2024-10-01T11:30:09",
+                updatedAt: "2024-10-10T16:42:27"
+            }
+        }).as('sessionDetail');
+        cy.get('button').contains('Edit').click();
+        cy.get('input[formControlName=name]').clear().type("Simpsons Yoga Success");
+        cy.get('input[formControlName=date]').clear().type(`2024-12-25`);
+        cy.get('mat-select[formControlName=teacher_id]').click();
+        cy.get('mat-option').contains('Homer Simpson').click();
+        cy.get('textarea[formControlName=description]').clear().type("Finally, the Simpsons succeed at yoga!");
+        cy.get('button').contains('Save').click();
+    });
 
-//         cy.get('button').contains('Save').click();
-//     });
 
-//     it('should see the new session', () => {
-//         cy.get('.item').should('have.length', 3);
-//         cy.get('.item').contains('New session').should('exist');
-//     });
+    it('should display login and register buttons when user is not logged in', () => {
+        cy.visit('/');
+        cy.contains('Login').should('be.visible');
+        cy.contains('Register').should('be.visible');
+    });
 
-//     it('should see the details', () => {
-//         cy.intercept('GET', '/api/session/3', {
-//             body: {
-//                 id: 3,
-//                 name: 'New session',
-//                 description: 'New session description',
-//                 teacher: 1,
-//                 users: [],
-//             },
-//         }).as('session');
+    it('should allow user to navigate to account /me and display user information', () => {
+        cy.intercept('GET', '/api/user/1', {
+            statusCode: 200,
+            body: {
+                id: 1,
+                firstName: 'Bart',
+                lastName: 'Simpson',
+                email: 'bart.simpson@test.com',
+                admin: true,
+                createdAt: '2000-06-14T00:00:00Z',
+                updatedAt: '2024-10-10T00:00:00Z'
+            }
+        }).as('getUser');
 
-//         cy.intercept('GET', '/api/teacher/1', {
-//             body: {
-//                 id: 1,
-//                 lastName: 'Mario',
-//                 firstName: 'Luigi',
-//                 createdAt: new Date(),
-//                 updatedAt: new Date(),
-//             },
-//         }).as('teacher');
+        cy.get('span[routerLink="me"]').click();
 
-//         cy.get('mat-card').last().contains('Detail').last().click();
-//         cy.url().should('include', '/sessions/detail/3');
+        cy.wait('@getUser', { timeout: 10000 });
 
-//         cy.get('div').contains('New session description').should('exist');
-//     });
+        cy.url().should('include', '/me');
 
-//     it("should delete session", () => {
-//         cy.intercept('DELETE', '/api/session/3', {});
-//         cy.intercept('GET', '/api/session', {
-//             body: [{
-//                 id: 1,
-//                 name: 'Session 1',
-//                 description: 'Lorem ipsum dolor sit amet. ' +
-//                     'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                     'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                     'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                 date: new Date(),
-//                 createdAt: new Date(),
-//                 updatedAt: new Date(),
-//                 teacher_id: 1,
-//                 users: [1, 2, 3],
-//             },
-//             {
-//                 id: 2,
-//                 name: 'Session 2',
-//                 description: 'Lorem ipsum dolor sit amet. ' +
-//                     'Est incidunt omnis aut tenetur quasi ut ullam autem qui sunt iure. ' +
-//                     'sed impedit quia id fuga galisum. Eum rerum doloribus quo ' +
-//                     'dolorem culpa est rerum voluptas aut voluptas temporibus aut dolorem minima?',
-//                 date: new Date(),
-//                 createdAt: new Date(),
-//                 updatedAt: new Date(),
-//                 teacher_id: 1,
-//                 users: [1, 2, 4],
-//             },],
-//         }).as('sessions');
+        cy.get('p').contains('Name: Bart SIMPSON');
+        cy.get('p').contains('Email: bart.simpson@test.com');
+        cy.get('p').contains('Create at: June 14, 2000');
+        cy.get('p').contains('Last update: October 10, 2024');
+        cy.get('p').contains('You are admin');
+    });
 
-//         cy.get('button').contains('Delete').click();
-
-//         cy.url().should('contain', '/sessions');
-//         cy.get('.item').should('have.length', 2);
-//         cy.get('.item').contains('New session').should('not.exist');
-//     });
-
-// });
+    it('should display "Page not found !" when navigating to an unknown route', () => {
+        cy.visit('/unknown-route', { failOnStatusCode: false });
+        cy.get('h1').should('contain', 'Page not found !');
+        cy.get('.flex.justify-center').should('be.visible');
+    });
+});
