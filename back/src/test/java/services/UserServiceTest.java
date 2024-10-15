@@ -3,7 +3,6 @@ package services;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.UserService;
-import com.sun.xml.bind.v2.TODO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,15 +41,17 @@ public class UserServiceTest {
         User u = userService.findById(1L);
 
         assertEquals(1L, u.getId());
-        assertEquals("user@user.com", u.getEmail()); // Corrigé pour enlever l'espace
+        assertEquals("user@user.com", u.getEmail()); 
     }
 
     @Test
     public void testDeleteById() {
-        // Préparer le mock pour que findById retourne l'utilisateur
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
         userService.delete(1L);
+
         verify(userRepository, times(1)).deleteById(1L);
+
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         User result = userService.findById(1L);
         assertNull(result);
@@ -66,6 +67,7 @@ public class UserServiceTest {
     }
 
     @Test
+
     public void testFindAll() {
         List<User> users = Arrays.asList(
                 new User(1L, "user1@user.com", "John", "Doe", "johnSecret", false,

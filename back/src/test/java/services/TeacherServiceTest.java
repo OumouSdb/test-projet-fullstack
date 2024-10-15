@@ -69,6 +69,7 @@ public class TeacherServiceTest {
         assertEquals("Patrick", result.get(1).getFirstName());
         verify(teacherRepository, times(1)).findAll();
     }
+
     @Test
     public void testDeleteById() {
 
@@ -92,23 +93,18 @@ public class TeacherServiceTest {
 
         when(teacherRepository.save(any(Teacher.class))).thenReturn(updatedTeacher);
 
-
         Teacher result = teacherRepository.save(updatedTeacher);
-
 
         assertEquals("Bob", result.getFirstName());
         assertEquals(LocalDateTime.of(2023, 10, 1, 14, 30, 0), result.getUpdatedAt());
-
 
         verify(teacherRepository, times(1)).save(updatedTeacher);
     }
 
     @Test
     public void testSaveTeacher() {
-
         Teacher newTeacher = new Teacher(null, "Carré", "Patrick",
                 LocalDateTime.now(), LocalDateTime.now());
-
 
         when(teacherRepository.save(newTeacher)).thenReturn(new Teacher(2L, "Carré", "Patrick",
                 LocalDateTime.of(2023, 10, 1, 14, 30, 0), LocalDateTime.of(2023, 10, 1, 14, 30, 0)));
@@ -119,6 +115,7 @@ public class TeacherServiceTest {
         assertNotNull(result.getId());
         assertEquals(2L, result.getId());
         assertEquals("Patrick", result.getFirstName());
+
         verify(teacherRepository, times(1)).save(newTeacher);
     }
 

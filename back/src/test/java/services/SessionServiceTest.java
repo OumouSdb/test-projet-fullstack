@@ -1,5 +1,7 @@
 package services;
 
+import com.openclassrooms.starterjwt.SpringBootSecurityJwtApplication;
+
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
@@ -154,3 +156,4 @@ public class SessionServiceTest {
     }
 
 }
+
