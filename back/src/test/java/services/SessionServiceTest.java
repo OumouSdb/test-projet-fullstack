@@ -1,6 +1,7 @@
 package services;
 
 import com.openclassrooms.starterjwt.SpringBootSecurityJwtApplication;
+
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
@@ -11,10 +12,10 @@ import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,8 +25,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class SessionServiceTest {
 
     @InjectMocks
@@ -156,3 +156,4 @@ public class SessionServiceTest {
     }
 
 }
+

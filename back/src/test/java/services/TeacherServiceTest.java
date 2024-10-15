@@ -49,6 +49,7 @@ public class TeacherServiceTest {
 
     @Test
     public void testFindAll() {
+
         List<Teacher> teachers = Arrays.asList(
                 new Teacher(1L, "L eponge", "Bob",
                         LocalDateTime.of(2023, 9, 24, 14, 30, 0),
@@ -57,6 +58,7 @@ public class TeacherServiceTest {
                         LocalDateTime.of(2023, 9, 25, 14, 30, 0),
                         LocalDateTime.of(2023, 9, 25, 14, 30, 0))
         );
+
 
         when(teacherRepository.findAll()).thenReturn(teachers);
 
@@ -69,10 +71,25 @@ public class TeacherServiceTest {
     }
 
     @Test
+    public void testDeleteById() {
+
+        when(teacherRepository.findById(1L)).thenReturn(Optional.of(teacher1));
+
+        teacherRepository.deleteById(1L);
+
+        verify(teacherRepository, times(1)).deleteById(1L);
+
+        when(teacherRepository.findById(1L)).thenReturn(Optional.empty());
+        Optional<Teacher> result = teacherRepository.findById(1L);
+        verify(teacherRepository, times(1)).deleteById(1L);
+    }
+    @Test
     public void testUpdateTeacher() {
+
         Teacher updatedTeacher = new Teacher(1L, "L eponge", "Bob",
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0),
                 LocalDateTime.of(2023, 10, 1, 14, 30, 0));
+
 
         when(teacherRepository.save(any(Teacher.class))).thenReturn(updatedTeacher);
 
@@ -92,6 +109,7 @@ public class TeacherServiceTest {
         when(teacherRepository.save(newTeacher)).thenReturn(new Teacher(2L, "Carré", "Patrick",
                 LocalDateTime.of(2023, 10, 1, 14, 30, 0), LocalDateTime.of(2023, 10, 1, 14, 30, 0)));
 
+
         Teacher result = teacherRepository.save(newTeacher);
 
         assertNotNull(result.getId());
@@ -100,5 +118,6 @@ public class TeacherServiceTest {
 
         verify(teacherRepository, times(1)).save(newTeacher);
     }
+
 
 }

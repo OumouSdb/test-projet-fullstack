@@ -41,7 +41,7 @@ public class UserServiceTest {
         User u = userService.findById(1L);
 
         assertEquals(1L, u.getId());
-        assertEquals("user@user.com", u.getEmail()); // Corrigé pour enlever l'espace
+        assertEquals("user@user.com", u.getEmail()); 
     }
 
     @Test
@@ -58,6 +58,16 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testFindById_UserNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        User result = userService.findById(999L);
+
+        assertNull(result);
+    }
+
+    @Test
+
     public void testFindAll() {
         List<User> users = Arrays.asList(
                 new User(1L, "user1@user.com", "John", "Doe", "johnSecret", false,
@@ -80,6 +90,7 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser() {
+
         User updatedUser = new User(1L, "user@user.com", "Tom", "Sawyer", "newSecret", false,
                 LocalDateTime.of(2023, 9, 24, 14, 30, 0),
                 LocalDateTime.of(2023, 10, 1, 14, 30, 0));
