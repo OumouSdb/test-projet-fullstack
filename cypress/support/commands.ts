@@ -41,8 +41,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-// cypress/support/commands.js
-
 Cypress.Commands.add('login', () => {
     cy.visit('/login');
 
@@ -52,7 +50,7 @@ Cypress.Commands.add('login', () => {
             username: 'userName',
             firstName: 'firstName',
             lastName: 'lastName',
-            email: 'user@example.com',
+            email: 'yoga@studio.com',
             admin: true
         }
     }).as('login');
@@ -61,4 +59,3 @@ Cypress.Commands.add('login', () => {
     cy.get('input[formControlName=password]').type(`test!1234{enter}{enter}`);
     cy.url().should('include', '/sessions');
 });
-
